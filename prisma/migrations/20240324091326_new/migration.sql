@@ -63,6 +63,30 @@ CREATE TABLE "seekers" (
     CONSTRAINT "seekers_pkey" PRIMARY KEY ("seekerId")
 );
 
+-- CreateTable
+CREATE TABLE "donners" (
+    "donarId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "age" INTEGER NOT NULL,
+    "designation" TEXT,
+    "email" TEXT NOT NULL,
+    "gender" "Gender" NOT NULL,
+    "phoneNumber" TEXT NOT NULL,
+    "area" TEXT NOT NULL,
+    "upozillaName" TEXT NOT NULL,
+    "districtName" TEXT NOT NULL,
+    "bloodGroup" "BloodGroup" NOT NULL,
+    "lastDonatedAt" TIMESTAMP(3),
+    "totalDonatedTimes" INTEGER,
+    "allergies" BOOLEAN,
+    "identification" TEXT,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "donners_pkey" PRIMARY KEY ("donarId")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -75,8 +99,17 @@ CREATE UNIQUE INDEX "seekers_email_key" ON "seekers"("email");
 -- CreateIndex
 CREATE UNIQUE INDEX "seekers_contactNumber_key" ON "seekers"("contactNumber");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "donners_email_key" ON "donners"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "donners_phoneNumber_key" ON "donners"("phoneNumber");
+
 -- AddForeignKey
 ALTER TABLE "admins" ADD CONSTRAINT "admins_email_fkey" FOREIGN KEY ("email") REFERENCES "users"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "seekers" ADD CONSTRAINT "seekers_email_fkey" FOREIGN KEY ("email") REFERENCES "users"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "donners" ADD CONSTRAINT "donners_email_fkey" FOREIGN KEY ("email") REFERENCES "users"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
