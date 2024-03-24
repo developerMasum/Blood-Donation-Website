@@ -56,6 +56,9 @@ CREATE TABLE "seekers" (
     "patientBloodGroup" "BloodGroup" NOT NULL,
     "medicalCondition" TEXT NOT NULL,
     "reasonForBlood" TEXT NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "seekers_pkey" PRIMARY KEY ("seekerId")
 );
