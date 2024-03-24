@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String     @id @default(uuid())
+  email              String     @unique
+  password           String
+  role               UserRole
+  needPasswordChange Boolean    @default(true)
+  status             UserStatus @default(ACTIVE)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  admin              Admin?
+  seeker             Seeker?
+
+  @@map("users")
+}
+
+model Admin {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  profilePhoto  String?
+  contactNumber String
+  isDeleted     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [email], references: [email])
+
+  @@map("admins")
+}
+
+model Seeker {
+  seekerId               String             @id @default(uuid())
+  name             String
+  email            String             @unique
+  profilePhoto     String?
+  contactNumber    String             @unique
+  area             String
+  upozillaName     String
+  districtName     String
+  organizationType OrganizationType
+  patientAge Int
+  patientBloodGroup  BloodGroup
+  medicalCondition String
+  reasonForBlood   String
+
+  user             User               @relation( fields: [email], references: [email])
+
+  @@map("seekers")
+}
+
+
+
+// Donar
+// model Donor {
+//   donarId            String          @id @default(uuid())
+//   name               String
+//   age                Int
+//   designation        String
+//   email              String          @unique
+//   gender             Gender          
+//   phoneNumber        String          @unique
+//   address           String 
+//   bloodGroup         BloodGroup
+//   donationHistory    Donation[]   
+//   lastDonatedAt      DateTime?   
+//   totalDonatedTimes  Int       
+//   allergies          Boolean?      
+//   identification     String?  
+
+// }
+
+// model Donation {
+//   id                 String          @id @default(uuid())
+//   donor              Donor           @relation(fields: [donorId], references: [donarId])
+//   donorId            String
+//   seeker             Seeker          @relation(fields: [seekerId], references: [id])
+//   seekerId           String
+//   donationDate       DateTime   
+// }
+
+// -----------ENUMS ------------------- 
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  DONAR
+  SEEKER
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  DELETED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHERS
+}
+
+enum OrganizationType {
+  INDEVITUAL
+  HOSPITAL
+  BLOODBANK
+}
+
+enum BloodGroup {
+  A
+  A_POSITIVE
+  A_NEGATIVE
+  B
+  B_POSITIVE
+  B_NEGATIVE
+  AB
+  AB_POSITIVE
+  AB_NEGATIVE
+  O
+  O_POSITIVE
+  O_NEGATIVE
+}
