@@ -5,6 +5,8 @@ import * as bcrypt from "bcrypt";
 import { UserStatus } from "@prisma/client";
 import config from "../../../config";
 import emailSender from "./emailSender";
+import ApiError from "../../errors/ApiErrors";
+import httpStatus from "http-status";
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUniqueOrThrow({
@@ -144,9 +146,45 @@ const forgetPassword = async (payload: { email: string }) => {
   //
 };
 
+const resetPassword = async (
+  token: string,
+  payload: { id: string; password: string }
+) => {
+  const userData = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: payload.id,
+      status: UserStatus.ACTIVE,
+    },
+  });
+
+  const isValidToken = jwtHelpers.verifyToken(
+    token,
+    config.jwt.reset_password_token as Secret
+  );
+if (!isValidToken) {
+  throw new ApiError(httpStatus.FORBIDDEN,"you are forbidden")
+}
+
+//  hashed pass
+const hashedPassword: string = await bcrypt.hash(payload.password, 12);
+await prisma.user.update({
+  where: {
+    id: userData.id,
+    status: UserStatus.ACTIVE,
+  },
+  data: {
+    password: hashedPassword,
+    needPasswordChange: false,
+  },
+});
+
+// update pass
+};
+
 export const AuthService = {
   loginUser,
   refreshToken,
   changePassword,
   forgetPassword,
+  resetPassword
 };
